@@ -113,4 +113,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         show('login');
     });
 
+    btnAdd.addEventListener('click', async () => {
+        const title = (newTask.value || '').trim();
+
+        if (!title) return;
+
+        const res = await fetch('/tasks',{
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({tittle, completed: false})
+
+        });
+
+        if (res.status === 401) {
+            show('login');
+            return;
+        }
+
+        newTask.value = '';
+        await fetchTasks();
+
+    });
+
+    await checkAuthAndInit();
+
 });

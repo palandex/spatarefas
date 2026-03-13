@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>SPA ToDo - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --primary: #4f46e5;
+      --text: #111827;
+      --muted: #6b7280;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+    .container {
+      width: 100%; max-width: 420px; margin: 6vh auto 0; padding: 0 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    h1 {
+      font-size: 1.4rem; margin: 0 0 8px;
+    }
+    p.subtitle {
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    label { display: block; font-size: 0.9rem; margin: 12px 0 6px; }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 12px 12px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 1rem; background: #fff;
+    }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #4338ca; }
+    .error { color: #b91c1c; margin-top: 8px; font-size: 0.95rem; }
+    .note { margin-top: 8px; font-size: 0.85rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="loginCard">
+      <h1>Login</h1>
+      <p class="subtitle">Acesse a aplicação de tarefas. Usuário: <strong>aluno</strong>, Senha: <strong>senha123</strong></p>
+
+      <label for="username">Usuário</label>
+      <input type="text" id="username" placeholder="Digite o usuário" autocomplete="username" />
+
+      <label for="password">Senha</label>
+      <input type="password" id="password" placeholder="Digite a senha" autocomplete="current-password" />
+
+      <button id="btnLogin">Entrar</button>
+
+      <p class="error" id="loginError" aria-live="polite" style="display:none;">Credenciais inválidas. Tente: aluno / senha123</p>
+      <p class="note">Observação pedagógica: este login é apenas simulado para fins didáticos. Não utilize em produção.</p>
+    </div>
+  </div>
+
+  <script>
+    // Opcional: já iniciar com o token armazenado para cenários de demonstração
+    // const stored = localStorage.getItem('todo_token');
+    // if (stored) { window.location.href = '/index.html'; }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const btnLogin = document.getElementById('btnLogin');
+      const loginError = document.getElementById('loginError');
+
+      btnLogin.addEventListener('click', () => {
+        const username = (usernameInput.value || '').trim();
+        const password = (passwordInput.value || '').trim();
+
+        // Requisito mínimo: chamada simulada ao backend
+        // Aqui o front-end já envia ao backend real no projeto; para a aula, mantemos a mesma
+        fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        })
+        .then(res => {
+          if (!res.ok) throw new Error('Credenciais inválidas');
+          return res.json();
+        })
+        .then(data => {
+          // Armazenar token e redirecionar para a SPA principal (index.html)
+          const token = data.token;
+          localStorage.setItem('todo_token', token);
+          // Redirecionar para a SPA (index.html que consome /tasks)
+          window.location.href = '/index.html';
+        })
+        .catch(() => {
+          loginError.style.display = 'block';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
